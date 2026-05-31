@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ lista.nome }} - Louvemos Digital</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --bg-principal: #f4f6f9;
+            --bg-card: rgba(255, 255, 255, 0.9);
+            --texto-principal: #0f172a;
+            --texto-secundario: #475569;
+            --texto-suave: #94a3b8;
+            --azul-marca: #2563eb;
+            --azul-hover: #1d4ed8;
+            --borda: rgba(226, 232, 240, 0.6);
+            --fonte-premium: 'Inter', system-ui, sans-serif;
+        }
+        [data-theme="dark"] {
+            --bg-principal: #0b0f19;
+            --bg-card: rgba(30, 41, 59, 0.9);
+            --texto-principal: #f8fafc;
+            --texto-secundario: #cbd5e1;
+            --texto-suave: #64748b;
+            --azul-marca: #3b82f6;
+            --borda: rgba(51, 65, 85, 0.6);
+        }
+
+        body { font-family: var(--fonte-premium); -webkit-font-smoothing: antialiased; margin: 0; padding: 40px 20px; transition: 0.3s; color: var(--texto-principal); }
+        
+        body:not([data-theme="dark"]) {
+            background-image: url("{{ url_for('static', filename='fundo.png') }}?v={{ versao_fundo }}");
+            background-size: cover; background-position: center; background-attachment: fixed; background-repeat: no-repeat;
+        }
+        [data-theme="dark"] body {
+            background-image: url("{{ url_for('static', filename='fundo_escuro.png') }}?v={{ versao_fundo }}");
+            background-size: cover; background-position: center; background-attachment: fixed; background-repeat: no-repeat;
+        }
+
+        .wrapper { max-width: 750px; margin: 0 auto; }
+        .voltar { text-decoration: none; color: var(--azul-marca); font-weight: 600; font-size: 14px; display: inline-flex; align-items: center; gap: 6px; margin-bottom: 20px; }
+        
+        .form-renomear { display: flex; gap: 12px; align-items: center; margin-bottom: 8px; }
+        .input-nome-lista { font-family: var(--fonte-premium); font-size: 24px; font-weight: 800; background: transparent; border: none; border-bottom: 2px dashed var(--borda); width: 80%; padding: 4px 0; color: var(--texto-principal); letter-spacing: -0.02em; }
+        .input-nome-lista:focus { outline: none; border-bottom-color: var(--azul-marca); }
+        .btn-salvar-nome { background: var(--azul-marca); color: white; border: none; padding: 8px 14px; border-radius: 8px; font-weight: 600; cursor: pointer; font-size: 13px; display: none; }
+        
+        .acoes-lista { margin-bottom: 30px; }
+        .btn-excluir-lista { color: #ef4444; text-decoration: none; font-size: 13px; font-weight: 600; display: inline-flex; align-items: center; gap: 6px; }
+        .btn-excluir-lista:hover { text-decoration: underline; }
+        
+        .box-repertorio { background: var(--bg-card); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); padding: 30px; border-radius: 16px; border: 1px solid var(--borda); box-shadow: 0 4px 20px -2px rgba(0,0,0,0.03); }
+        
+        .form-add-musica { display: flex; gap: 10px; margin-bottom: 25px; background: rgba(0,0,0,0.02); [data-theme="dark"] & { background: rgba(255,255,255,0.01); } padding: 16px; border-radius: 12px; border: 1px solid var(--borda); }
+        .form-add-musica select { font-family: var(--fonte-premium); flex: 1; padding: 10px; border-radius: 8px; border: 1px solid var(--borda); background: var(--bg-principal); color: var(--texto-principal); font-size: 14px; font-weight: 500; }
+        .form-add-musica button { font-family: var(--fonte-premium); background: var(--azul-marca); color: white; border: none; padding: 10px 18px; border-radius: 8px; font-weight: 600; cursor: pointer; font-size: 14px; }
+        .form-add-musica button:hover { background: var(--azul-hover); }
+
+        .lista-musicas { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 8px; }
+        .link-card-m { text-decoration: none; display: block; color: inherit; }
+        .item-musica { display: flex; justify-content: space-between; align-items: center; padding: 14px 20px; background: rgba(0,0,0,0.02); [data-theme="dark"] & { background: rgba(255,255,255,0.01); } border-radius: 10px; border: 1px solid var(--borda); transition: all 0.2s; }
+        .link-card-m:hover .item-musica { transform: translateX(2px); border-color: var(--azul-marca); background: rgba(0,0,0,0.04); }
+        
+        .txt-m-titulo { color: var(--texto-principal); font-weight: 600; font-size: 16px; }
+        .link-card-m:hover .txt-m-titulo { color: var(--azul-marca); }
+        .btn-remover-m { color: #ef4444; text-decoration: none; font-weight: 600; font-size: 13px; padding: 6px; display: inline-flex; align-items: center; gap: 4px; }
+    </style>
+</head>
+<body>
+    <div class="wrapper">
+        <a class="voltar" href="/"><i class="fa-solid fa-arrow-left"></i> Voltar para o início</a>
+        
+        <form class="form-renomear" action="/lista/editar_nome/{{ lista.id }}" method="POST">
+            <input type="text" name="nome" value="{{ lista.nome }}" class="input-nome-lista" oninput="mostrarBotaoSalvar()" required>
+            <button type="submit" id="btn-salvar" class="btn-salvar-nome"><i class="fa-solid fa-check"></i> Salvar</button>
+        </form>
+        
+        <div class="acoes-lista">
+            <a href="/lista/excluir/{{ lista.id }}" class="btn-excluir-lista" onclick="return confirm('Excluir repertório?')"><i class="fa-regular fa-trash-can"></i> Excluir Repertório</a>
+        </div>
+
+        <div class="box-repertorio">
+            <form class="form-add-musica" action="/lista/{{ lista.id }}/add_musica" method="POST">
+                <select name="musica_id" required>
+                    <option value="" disabled selected>🔍 Vincular música ao repertório...</option>
+                    {% for m in todas_musicas %}
+                        <option value="{{ m.id }}">{{ m.titulo }} ({{ m.artista }})</option>
+                    {% endfor %}
+                </select>
+                <button type="submit"><i class="fa-solid fa-link"></i> Incluir</button>
+            </form>
+
+            <h3 style="margin: 0 0 15px 0; font-size: 14px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--texto-secundario);"><i class="fa-solid fa-list-ol"></i> Ordem das Músicas</h3>
+            <ul class="lista-musicas">
+                {% for musica in musicas_na_lista %}
+                    <a class="link-card-m" href="/musica/{{ musica.id }}">
+                        <div class="item-musica">
+                            <div>
+                                <span class="txt-m-titulo">{{ musica.titulo }}</span> <br>
+                                <small style="color: var(--texto-suave); font-weight: 500;">{{ musica.artista }}</small>
+                            </div>
+                            <a href="/lista/{{ lista.id }}/remove_musica/{{ musica.id }}" class="btn-remover-m" onclick="event.stopPropagation(); return confirm('Remover?')"><i class="fa-regular fa-circle-xmark"></i> Remover</a>
+                        </div>
+                    </a>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+    <script>
+        document.documentElement.setAttribute('data-theme', localStorage.getItem('tema') || 'light');
+        function mostrarBotaoSalvar() { document.getElementById('btn-salvar').style.display = 'inline-block'; }
+    </script>
+</body>
+</html>

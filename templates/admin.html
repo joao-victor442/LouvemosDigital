@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - Louvemos Digital</title>
+    <style>
+        :root {
+            --bg-principal: #f4f6f9;
+            --bg-card: #ffffff;
+            --texto-principal: #1e293b;
+            --texto-secundario: #64748b;
+            --azul-primario: #1e3a8a;
+            --azul-destaque: #3b82f6;
+            --borda: #e2e8f0;
+        }
+        [data-theme="dark"] {
+            --bg-principal: #0f172a;
+            --bg-card: #1e293b;
+            --texto-principal: #f8fafc;
+            --texto-secundario: #94a3b8;
+            --azul-primario: #3b82f6;
+            --borda: #334155;
+        }
+
+        body { font-family: 'Segoe UI', sans-serif; margin: 0; padding: 40px 20px; background-color: var(--bg-principal); color: var(--texto-principal); transition: 0.3s; }
+        .wrapper { max-width: 1000px; margin: 0 auto; }
+        
+        .topo-painel { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; position: relative; }
+        .controles-direita { display: flex; align-items: center; gap: 15px; }
+        .voltar { text-decoration: none; color: var(--azul-primario); font-weight: bold; }
+        .btn-logout { background-color: #ef4444; color: white; text-decoration: none; padding: 8px 14px; border-radius: 6px; font-weight: bold; font-size: 14px; }
+        
+        .btn-config { background: transparent; border: none; font-size: 24px; cursor: pointer; display: flex; align-items: center; color: var(--texto-secundario); transition: transform 0.2s; }
+        .btn-config:hover { transform: rotate(45deg); color: var(--azul-destaque); }
+
+        .caixa-config { display: none; position: absolute; top: 45px; right: 80px; background: var(--bg-card); padding: 20px; border-radius: 10px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); border: 1px solid var(--borda); z-index: 100; width: 280px; }
+        .caixa-config.aberta { display: block; animation: abrirSuave 0.15s ease-out; }
+        .caixa-config h3 { margin: 0 0 15px 0; font-size: 16px; color: var(--azul-primario); text-align: center; }
+        
+        .grupo-upload { margin-bottom: 15px; text-align: left; }
+        .grupo-upload label { font-size: 12px; font-weight: bold; color: var(--texto-secundario); display: block; margin-bottom: 4px; }
+        .caixa-config input[type="file"] { font-size: 12px; width: 100%; color: var(--texto-principal); }
+        .btn-upload-submit { background-color: var(--azul-primario); color: white; border: none; padding: 10px; border-radius: 6px; font-weight: bold; font-size: 13px; width: 100%; cursor: pointer; margin-top: 5px; }
+
+        h1 { color: var(--azul-primario); margin: 0; }
+        .container { display: flex; gap: 30px; margin-top: 30px; }
+        .coluna-form, .coluna-lista { flex: 1; background: var(--bg-card); padding: 25px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.02); border: 1px solid var(--borda); }
+        
+        .campo { margin-bottom: 15px; }
+        label { display: block; font-weight: bold; margin-bottom: 6px; font-size: 14px; }
+        input[type="text"], textarea { width: 100%; padding: 10px; border: 1px solid var(--borda); border-radius: 6px; background: var(--bg-principal); color: var(--texto-principal); box-sizing: border-box; font-size: 15px; }
+        textarea { height: 220px; font-family: monospace; }
+        
+        .btn-salvar { background-color: #10b981; color: white; border: none; padding: 12px; font-size: 16px; border-radius: 6px; cursor: pointer; font-weight: bold; width: 100%; }
+        .btn-cancelar { display: block; text-align: center; background-color: #64748b; color: white; text-decoration: none; padding: 10px; border-radius: 6px; margin-top: 10px; font-weight: bold; }
+        
+        .item-musica { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--borda); }
+        .btn-editar { background-color: #f59e0b; color: white; text-decoration: none; padding: 6px 12px; border-radius: 4px; font-size: 13px; font-weight: bold; margin-right: 5px; }
+        .btn-excluir { background-color: #ef4444; color: white; text-decoration: none; padding: 6px 12px; border-radius: 4px; font-size: 13px; font-weight: bold; }
+        .ajuda { background-color: var(--bg-principal); padding: 12px; border-radius: 6px; font-size: 13px; margin-bottom: 15px; border-left: 4px solid var(--azul-primario); }
+
+        @keyframes abrirSuave {
+            from { opacity: 0; transform: translateY(-8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+    <div class="wrapper">
+        <div class="topo-painel">
+            <a class="voltar" href="/">⬅ Voltar para o início</a>
+            
+            <div class="controles-direita">
+                <button class="btn-config" onclick="alternarCaixaConfig(event)">⚙️</button>
+                <a class="btn-logout" href="/logout">🚪 Sair</a>
+            </div>
+
+            <div id="dropdown-config" class="caixa-config">
+                <h3>🖼️ Imagens de Fundo</h3>
+                <form class="form-upload-fundo" action="/admin/upload_fundo" method="POST" enctype="multipart/form-data">
+                    <div class="grupo-upload">
+                        <label>☀️ Tema Claro (fundo.png):</label>
+                        <input type="file" name="foto_fundo_claro" accept="image/png, image/jpeg">
+                    </div>
+                    <div class="grupo-upload">
+                        <label>🌙 Tema Escuro (fundo_escuro.png):</label>
+                        <input type="file" name="foto_fundo_escuro" accept="image/png, image/jpeg">
+                    </div>
+                    <button type="submit" class="btn-upload-submit">📤 Salvar Configurações</button>
+                </form>
+            </div>
+        </div>
+        
+        <h1>🎛️ Painel do Administrador</h1>
+        <hr style="border: 0; border-top: 1px solid var(--borda); margin: 20px 0;">
+
+        <div class="container">
+            <div class="coluna-form">
+                {% if musica_editando %}
+                    <h2>Editar Música</h2>
+                    <form action="/admin/editar/{{ musica_editando.id }}" method="POST">
+                {% else %}
+                    <h2>Nova Música</h2>
+                    <form action="/admin/adicionar" method="POST">
+                {% endif %}
+                    <div class="ajuda">Digite a cifra na linha de cima e o texto na linha de baixo alinhando com espaços.</div>
+                    
+                    <div class="campo">
+                        <label>Título da Canção:</label>
+                        <input type="text" name="titulo" required value="{{ musica_editando.titulo if musica_editando else '' }}">
+                    </div>
+                    
+                    <div class="campo">
+                        <label>Artista / Ministério:</label>
+                        <input type="text" name="artista" required value="{{ musica_editando.artista if musica_editando else '' }}">
+                    </div>
+                    
+                    <div class="campo">
+                        <label>Tom Base:</label>
+                        <input type="text" name="tom_original" required style="width: 80px;" value="{{ musica_editando.tom_original if musica_editando else '' }}">
+                    </div>
+                    
+                    <div class="campo">
+                        <label>Bloco de Letra e Cifras:</label>
+                        <textarea name="letra" required>{{ musica_editando.letra if musica_editando else '' }}</textarea>
+                    </div>
+                    
+                    {% if musica_editando %}
+                        <button type="submit" class="btn-salvar">🔄 Salvar Alterações</button>
+                        <a href="/admin" class="btn-cancelar">Cancelar</a>
+                    {% else %}
+                        <button type="submit" class="btn-salvar">💾 Adicionar Música</button>
+                    {% endif %}
+                </form>
+            </div>
+
+            <div class="coluna-lista">
+                <h2>Músicas no Sistema</h2>
+                {% for m in musicas %}
+                    <div class="item-musica">
+                        <div>
+                            <strong>{{ m['titulo'] }}</strong><br>
+                            <small>{{ m['artista'] }}</small>
+                        </div>
+                        <div>
+                            <a href="/admin?editar_id={{ m['id'] }}" class="btn-editar">Editar</a>
+                            <a href="/admin/excluir/{{ m['id'] }}" class="btn-excluir" onclick="return confirm('Excluir?')">Excluir</a>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.documentElement.setAttribute('data-theme', localStorage.getItem('tema') || 'light');
+        function alternarCaixaConfig(event) { 
+            event.stopPropagation(); 
+            document.getElementById('dropdown-config').classList.toggle('aberta'); 
+        }
+        document.addEventListener('click', function() { 
+            document.getElementById('dropdown-config').classList.remove('aberta'); 
+        });
+    </script>
+</body>
+</html>
