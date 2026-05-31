@@ -14,10 +14,10 @@
         :root {
             --bg-principal: #f4f6f9;
             --bg-card: rgba(255, 255, 255, 0.88);
-            --texto-principal: #0f172a; /* Azul escuro quase preto (padrão Apple/Apple Music) */
+            --texto-principal: #0f172a; 
             --texto-secundario: #475569;
             --texto-suave: #94a3b8;
-            --azul-marca: #2563eb; /* Azul corporativo moderno */
+            --azul-marca: #2563eb; 
             --azul-toque: #3b82f6;
             --borda: rgba(226, 232, 240, 0.6);
             --fonte-premium: 'Inter', system-ui, -apple-system, sans-serif;
@@ -33,10 +33,9 @@
             --borda: rgba(51, 65, 85, 0.6);
         }
 
-        /* Aplicação de renderização de alta definição para fontes */
         body { 
             font-family: var(--fonte-premium); 
-            -webkit-font-smoothing: antialiased; /* Suavização de pixels no Mac/iOS */
+            -webkit-font-smoothing: antialiased; 
             -moz-osx-font-smoothing: grayscale;
             margin: 0; 
             padding: 40px 20px; 
@@ -48,17 +47,16 @@
         }
         
         body:not([data-theme="dark"]) {
-            background-image: url("{{ url_for('static', filename='fundo.png') }}?v={{ versao_fundo }}");
+            background-image: url("{{ url_for('static', filename='fundo.webp') }}?v={{ versao_fundo }}");
             background-size: cover; background-position: center; background-attachment: fixed; background-repeat: no-repeat;
         }
         [data-theme="dark"] body {
-            background-image: url("{{ url_for('static', filename='fundo_escuro.png') }}?v={{ versao_fundo }}");
+            background-image: url("{{ url_for('static', filename='fundo_escuro.webp') }}?v={{ versao_fundo }}");
             background-size: cover; background-position: center; background-attachment: fixed; background-repeat: no-repeat;
         }
 
         .wrapper { max-width: 750px; margin: 0 auto; width: 100%; flex: 1; }
         
-        /* Acabamento com desfoque de vidro de alta qualidade (Glassmorphism) */
         .topo, .sidebar { 
             background: var(--bg-card); 
             backdrop-filter: blur(12px); 
@@ -71,12 +69,11 @@
         .topo { display: flex; justify-content: space-between; align-items: center; padding: 20px 24px; }
         .lado-esquerdo-topo { display: flex; align-items: center; gap: 16px; }
         
-        /* Botões com transições suaves e ícones vetorizados */
         .btn-menu { background: transparent; border: none; color: var(--texto-principal); font-size: 20px; cursor: pointer; padding: 6px; display: flex; align-items: center; transition: all 0.2s ease; }
         .btn-menu:hover { color: var(--azul-marca); transform: scale(1.05); }
         
         h1 { color: var(--texto-principal); margin: 0; font-size: 22px; font-weight: 800; letter-spacing: -0.03em; display: flex; align-items: center; gap: 10px; }
-        h1 i { color: var(--azul-marca); font-size: 20px; } /* Cor fixa no ícone vetorial do topo */
+        h1 i { color: var(--azul-marca); font-size: 20px; } 
         
         .btn-toggle { background: transparent; border: 1px solid var(--borda); color: var(--texto-principal); padding: 10px 16px; border-radius: 10px; cursor: pointer; font-weight: 600; font-size: 13px; display: flex; align-items: center; gap: 8px; transition: all 0.2s; }
         .btn-toggle:hover { background: rgba(0,0,0,0.03); border-color: var(--texto-secundario); }
@@ -98,7 +95,8 @@
         .form-lista button:hover { background: #059669; }
         
         .lista-repertorios-menu { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 6px; }
-        .lista-repertorios-menu li { background: rgba(0,0,0,0.02); [data-theme="dark"] & { background: rgba(255,255,255,0.01); } padding: 12px 14px; border-radius: 10px; border: 1px solid var(--borda); display: flex; align-items: center; gap: 10px; transition: all 0.2s; }
+        .lista-repertorios-menu li { background: rgba(0,0,0,0.02); padding: 12px 14px; border-radius: 10px; border: 1px solid var(--borda); display: flex; align-items: center; gap: 10px; transition: all 0.2s; }
+        [data-theme="dark"] .lista-repertorios-menu li { background: rgba(255,255,255,0.01); }
         .lista-repertorios-menu li:hover { border-color: var(--azul-toque); background: rgba(0,0,0,0.04); }
         .lista-repertorios-menu i { color: var(--texto-suave); font-size: 14px; }
         .lista-repertorios-menu a { text-decoration: none; color: var(--texto-principal); font-weight: 500; font-size: 14px; flex: 1; }
@@ -106,10 +104,17 @@
         .overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.3); backdrop-filter: blur(4px); z-index: 999; }
         .overlay.aberto { display: block; }
 
-        /* Lista de Músicas com Acabamento Fino */
-        .conteudo-principal { margin-top: 35px; }
-        h2 { color: var(--texto-principal); font-size: 15px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--texto-secundario); margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
-        h2 i { color: var(--azul-marca); }
+        /* Barra de Pesquisa */
+        .busca-container { margin-top: 25px; position: relative; }
+        .busca-icone { position: absolute; left: 16px; top: 50%; transform: translateY(-50%); color: var(--texto-suave); }
+        .input-busca { width: 100%; padding: 16px 16px 16px 44px; border-radius: 14px; border: 1px solid var(--borda); background: var(--bg-card); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); color: var(--texto-principal); font-family: var(--fonte-premium); font-size: 15px; box-shadow: 0 4px 20px -2px rgba(0,0,0,0.05); transition: all 0.2s; box-sizing: border-box; outline: none; }
+        .input-busca:focus { border-color: var(--azul-marca); box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1); }
+
+        .conteudo-principal { margin-top: 25px; }
+        
+        /* Ajuste de Contraste */
+        h2 { color: #ffffff; text-shadow: 0px 2px 5px rgba(0,0,0,0.6); font-size: 15px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+        h2 i { color: var(--azul-toque); }
         
         .lista-itens { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 10px; }
         .link-card-musica { text-decoration: none; display: block; }
@@ -137,15 +142,14 @@
         .titulo-musica { color: var(--texto-principal); font-weight: 600; font-size: 18px; margin: 0; letter-spacing: -0.01em; transition: color 0.2s; }
         .link-card-musica:hover .titulo-musica { color: var(--azul-marca); }
         
-        .info-musica { margin-top: 4px; color: var(--texto-secundario); font-size: 13px; font-weight: 500; display: flex; align-items: center; gap: 6px; }
+        .info-musica { margin-top: 6px; color: var(--texto-secundario); font-size: 13px; font-weight: 500; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
         
-        /* Badge de Tom Redesenhado (Discreto e Elegante) */
         .badge-tom { background: rgba(37, 99, 235, 0.08); color: var(--azul-marca); padding: 2px 8px; border-radius: 6px; font-weight: 700; font-size: 12px; border: 1px solid rgba(37, 99, 235, 0.15); }
 
-        /* Rodapé Premium */
-        footer { text-align: center; margin-top: 60px; padding: 20px; font-size: 13px; color: var(--texto-secundario); }
-        .link-discreto { color: var(--texto-secundario); text-decoration: none; font-weight: 600; }
-        .link-discreto:hover { color: var(--azul-marca); }
+        /* Rodapé Premium com Ajuste de Contraste */
+        footer { text-align: center; margin-top: 60px; padding: 20px; font-size: 13px; color: #ffffff; text-shadow: 0px 1px 4px rgba(0,0,0,0.7); }
+        .link-discreto { color: #ffffff; text-decoration: none; font-weight: 600; }
+        .link-discreto:hover { color: var(--azul-toque); }
     </style>
 </head>
 <body>
@@ -189,9 +193,14 @@
             <button class="btn-toggle" onclick="alternarTema()" id="btn-tema"><i class="fa-regular fa-moon"></i> Escuro</button>
         </div>
         
+        <div class="busca-container">
+            <i class="fa-solid fa-magnifying-glass busca-icone"></i>
+            <input type="text" id="inputBusca" class="input-busca" onkeyup="filtrarMusicas()" placeholder="Buscar pelo nome da música ou artista...">
+        </div>
+        
         <div class="conteudo-principal">
             <h2><i class="fa-solid fa-music"></i> Músicas Disponíveis</h2>
-            <ul class="lista-itens">
+            <ul class="lista-itens" id="listaMusicas">
                 {% for m in musicas %}
                     <a class="link-card-musica" href="/musica/{{ m['id'] }}">
                         <li>
@@ -242,6 +251,23 @@
             const overlay = document.getElementById('overlay-menu');
             sidebar.classList.toggle('aberto', abrir);
             overlay.classList.toggle('aberto', abrir);
+        }
+
+        // Lógica da Barra de Pesquisa
+        function filtrarMusicas() {
+            const input = document.getElementById('inputBusca').value.toLowerCase();
+            const cards = document.querySelectorAll('.link-card-musica');
+
+            cards.forEach(card => {
+                const titulo = card.querySelector('.titulo-musica').innerText.toLowerCase();
+                const artista = card.querySelector('.info-musica').innerText.toLowerCase();
+                
+                if (titulo.includes(input) || artista.includes(input)) {
+                    card.style.display = "block";
+                } else {
+                    card.style.display = "none";
+                }
+            });
         }
     </script>
 </body>
