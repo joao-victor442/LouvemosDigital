@@ -139,7 +139,10 @@
         function renderizarCifra() {
             const linhas = letraOriginal.split('\n');
             let novoHtml = '';
-            const regexAcorde = /^[A-G][#b]?(m|M|dim|sus|aug)?\d*(\+|-|º)?(\/[A-G][#b]?)?$/;
+            
+            // REGEX TURBINADA: Aceita variações como M, m, maj, dim, sus, aug, add, 7, 9, 11, 13, +, -, º, / e parênteses.
+            const regexAcorde = /^[A-G][#b]?(m|M|maj|dim|sus|aug|º|add)?\d*(m|M)?\d*(\+|-|º)?(\([^)]+\))?(\/\d+)?(\/[A-G][#b]?)?$/;
+            
             const regexBloco = /^\[.*\]$/;
 
             linhas.forEach(linha => {
@@ -147,15 +150,24 @@
                 if (linhaLimpa === "") { novoHtml += '\n'; return; }
                 if (regexBloco.test(linhaLimpa)) { novoHtml += `<span class="bloco-marca">${linhaLimpa}</span>`; return; }
 
-                const palavras = linhaLimpa.split(/\s+/);
-                let ehLinhaDeCifra = palavras.every(p => regexAcorde.test(p));
+                // Pega as palavras da linha, ignorando vazias
+                const palavras = linhaLimpa.split(/\s+/).filter(p => p !== "");
+                
+                // Validação de Linha: Considera cifra se todas as palavras forem acordes 
+                // OU símbolos comuns como barras de compasso (|), (2x), etc.
+                let ehLinhaDeCifra = palavras.length > 0 && palavras.every(p => 
+                    regexAcorde.test(p) || /^[\|:()0-9xX.*-]+$/.test(p)
+                );
 
                 if (ehLinhaDeCifra) {
                     let novaLinha = '', palavraAtual = '';
                     for(let i=0; i<linha.length; i++) {
                         if(linha[i] !== ' ' && linha[i] !== '\r') { palavraAtual += linha[i]; } 
                         else {
-                            if(palavraAtual) { novaLinha += `<span class="cifra">${transporAcordeCompleto(palavraAtual, semitonsAjustados)}</span>`; palavraAtual = ''; }
+                            if(palavraAtual) { 
+                                novaLinha += `<span class="cifra">${transporAcordeCompleto(palavraAtual, semitonsAjustados)}</span>`; 
+                                palavraAtual = ''; 
+                            }
                             if (linha[i] === ' ') novaLinha += ' ';
                         }
                     }
